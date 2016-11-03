@@ -138,7 +138,7 @@ class TestComponentHepMC2Dot(unittest.TestCase):
         self.dot_file = tempfile.NamedTemporaryFile(delete=False, mode='r')
         self.dot_file.close()
 
-        # globally define particle and vertex DOT strings for test maintainability
+        # use common definition of particle and vertex DOT strings for test maintainability
         self.vtx_200334 = '    V_200334 [label="vtx #-200334\\nr=1027.68,z=1423.66",pos="1423.657,1027.677!"];\n'
         self.vtx_200648 = '    V_200648 [label="vtx #-200648\\nr=1091.08,z=-1881.66",pos="-1881.663,1091.080!"];\n'
         self.vtx_dummy_200386 = '    V_dummy_200386 [shape=none,label="",pos="-1943.048,1281.427!"];\n'
