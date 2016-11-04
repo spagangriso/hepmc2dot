@@ -1,0 +1,3 @@
+# used only for coverage
+pytest-cov
+coveralls

@@ -1,9 +1,9 @@
 language: python
 python:
   - "2.7"
-install: "pip install coveralls pytest-cov"
+install:
+  - make install
 script:
-#  - make test
-  - py.test --cov=.
+  - make test
 after_success:
-  coveralls
+  - coveralls
