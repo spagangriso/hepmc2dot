@@ -159,6 +159,8 @@ class TestComponentHepMC2Dot(unittest.TestCase):
         os.remove(self.dot_file.name)
 
     def test_emptyHepMCFile_expectEmptyDotFile(self):
+        self.hepmc_file.close()
+
         hepmc2dot.main(self.hepmc_file.name, self.dot_file.name)
 
         with open(self.dot_file.name, 'r') as result_file:
@@ -166,6 +168,18 @@ class TestComponentHepMC2Dot(unittest.TestCase):
             actual_dot_contents = result_file.read()
             self.assertEqual(expected_dot_contents, actual_dot_contents)
 
+    def test_unknownDataInHepMCFile_expectEmptyDotFile(self):
+        self.hepmc_file.write("X this should be ignored\n")
+        self.hepmc_file.write("  this should be ignored too\n")
+        self.hepmc_file.write("Y and that as well\n")
+        self.hepmc_file.close()
+
+        hepmc2dot.main(self.hepmc_file.name, self.dot_file.name)
+
+        with open(self.dot_file.name, 'r') as result_file:
+            actual_dot_contents = result_file.read()
+        expected_dot_contents = ""
+        self.assertEqual(expected_dot_contents, actual_dot_contents)
 
     def test_oneEmptyHepMCEvent_expectOneEmptyDotDigraph(self):
         self.hepmc_file.write("E 29 -1 -1.00000000e+00 -1.00000000e+00 -1.00000000e+00 1111230000 -243 534 1 2 0 3\n")
@@ -174,10 +188,25 @@ class TestComponentHepMC2Dot(unittest.TestCase):
         hepmc2dot.main(self.hepmc_file.name, self.dot_file.name)
 
         with open(self.dot_file.name, 'r') as result_file:
-            expected_dot_contents = "digraph event_29 {\n" \
-                                    "}\n"
             actual_dot_contents = result_file.read()
-            self.assertEqual(expected_dot_contents, actual_dot_contents)
+        expected_dot_contents = "digraph event_29 {\n" \
+                                "}\n"
+        self.assertEqual(expected_dot_contents, actual_dot_contents)
+
+    def test_unknownDataAndOneEmptyEventInHepMCFile_expectOneEmptyDotDigraph(self):
+        self.hepmc_file.write("X this should be ignored\n")
+        self.hepmc_file.write("  this should be ignored too\n")
+        self.hepmc_file.write("E 29 -1 -1.00000000e+00 -1.00000000e+00 -1.00000000e+00 1111230000 -243 534 1 2 0 3\n")
+        self.hepmc_file.write("Y and please ignore this too\n")
+        self.hepmc_file.close()
+
+        hepmc2dot.main(self.hepmc_file.name, self.dot_file.name)
+
+        with open(self.dot_file.name, 'r') as result_file:
+            actual_dot_contents = result_file.read()
+        expected_dot_contents = "digraph event_29 {\n" \
+                                "}\n"
+        self.assertEqual(expected_dot_contents, actual_dot_contents)
 
     def test_eventWithOneHepMCVertex_expectOneEventWithOneVertexInDot(self):
         self.hepmc_file.write("E 29 -1 -1.00000000e+00 -1.00000000e+00 -1.00000000e+00 1111230000 -243 534 1 2 0 3\n")
