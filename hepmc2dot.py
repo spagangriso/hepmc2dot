@@ -1,8 +1,11 @@
 #!/usr/bin/env python
 
+import sys
+
 import math
 import re # regex
 import numpy as np
+import argparse
 
 
 def _get_dot_particle(prod_vtx_barcode, end_vtx_barcode,
@@ -187,7 +190,22 @@ class HepDotWriter(object):
         self.event_open = False
 
 
-def main(hepmc_file='events.hepmc', dot_file='events.dot'):
+def main(argv):
+    """
+    Parses the given command line arguments and runs the conversion from the specified
+    input HepMC::IO_GenEvent to the specified DOT output file
+    """
+    parser = argparse.ArgumentParser(description='Convert HepMC::IO_GenEvent ASCII files into DOT files')
+    parser.add_argument('hepmcfile', help='input HepMC::IO_GenEvent formatted ASCII file')
+    parser.add_argument('dotfile', help='output DOT file')
+    args = parser.parse_args(argv)
+    convert(args.hepmcfile, args.dotfile)
+
+
+def convert(hepmc_file, dot_file):
+    """
+    Converts the given HepMC::IO_GenEvent formatted file into a DOT formatted file
+    """
     begin_event_pattern = re.compile(r'^E .*$')
     vertex_pattern = re.compile(r'^V .*$')
     particle_pattern = re.compile(r'^P .*$')
@@ -208,4 +226,5 @@ def main(hepmc_file='events.hepmc', dot_file='events.dot'):
 
 
 if __name__ == '__main__':
-    main()
+    args = sys.argv[1:]
+    main(args)
