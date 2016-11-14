@@ -1,3 +1,6 @@
-# used only for coverage
-pytest-cov
+# for testing:
 coveralls
+prospector
+pylint
+pytest
+pytest-cov
