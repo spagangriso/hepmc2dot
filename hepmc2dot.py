@@ -4,7 +4,6 @@ import sys
 
 import math
 import re # regex
-import numpy as np
 import argparse
 
 
@@ -100,9 +99,8 @@ class HepDotWriter(object):
         hepmc = raw_hepmc_line.split()
         vtx_barcode_column = 1
         vtx_barcode = int(hepmc[vtx_barcode_column])
-        vtx_abs_barcode = abs(vtx_barcode)
-
         # TODO: implement next
+        #vtx_abs_barcode = abs(vtx_barcode)
         #if vtx_abs_barcode > self.vtx_threshold:
         #    return
 
@@ -210,7 +208,6 @@ def convert(hepmc_file, dot_file):
     vertex_pattern = re.compile(r'^V .*$')
     particle_pattern = re.compile(r'^P .*$')
 
-    event_open = False
     with open(hepmc_file, 'r') as hepmc:
         dot = HepDotWriter(dot_file)
 
