@@ -1,5 +1,7 @@
 [![Build Status](https://travis-ci.org/elritsch/hepmc2dot.svg?branch=master)](https://travis-ci.org/elritsch/hepmc2dot)
 [![Coverage Status](https://coveralls.io/repos/github/elritsch/hepmc2dot/badge.svg?branch=master)](https://coveralls.io/github/elritsch/hepmc2dot?branch=master)
+[![Documentation Status](https://readthedocs.org/projects/hepmc2dot/badge/?version=latest)](http://hepmc2dot.readthedocs.io/en/latest/?badge=latest)
+
 
 # Convert HepMC ASCII files to DOT graphs
 
