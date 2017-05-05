@@ -91,11 +91,11 @@ class HepDotWriter(object):
         #self.vtx_threshold = np.nan
         #self.scale = 2.
 
-    def newEvent(self, raw_hepmc_line):
+    def start_new_event(self, raw_hepmc_line):
         self._end_opened_event()
         self._begin_event(raw_hepmc_line)
 
-    def newVertex(self, raw_hepmc_line):
+    def start_new_vertex(self, raw_hepmc_line):
         hepmc = raw_hepmc_line.split()
         vtx_barcode_column = 1
         vtx_barcode = int(hepmc[vtx_barcode_column])
@@ -120,7 +120,7 @@ class HepDotWriter(object):
                                   scale=self.scale)
         self.dotfile.write(dot_vtx)
 
-    def addOutgoingParticle(self, raw_hepmc_line):
+    def add_outgoing_particle(self, raw_hepmc_line):
         line = raw_hepmc_line.split()
 
         particle_barcode_column = 1
@@ -213,11 +213,11 @@ def convert(hepmc_file, dot_file):
 
         for line in hepmc:
             if begin_event_pattern.match(line):
-                dot.newEvent(line)
+                dot.start_new_event(line)
             elif vertex_pattern.match(line):
-                dot.newVertex(line)
+                dot.start_new_vertex(line)
             elif particle_pattern.match(line):
-                dot.addOutgoingParticle(line)
+                dot.add_outgoing_particle(line)
             else:
                 pass # ignore unknown lines
 
