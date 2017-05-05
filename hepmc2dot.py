@@ -170,6 +170,9 @@ class HepDotWriter(object):
         self.dotfile.write(particle_dot)
 
     def close(self):
+        """
+        Terminates the currently open event and closes the output file.
+        """
         self._end_opened_event()
         self.dotfile.close()
 
