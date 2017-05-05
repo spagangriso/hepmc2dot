@@ -1,10 +1,9 @@
 #!/usr/bin/env python
 
-import sys
-
-import math
-import re # regex
 import argparse
+import math
+import re  # regex
+import sys
 
 
 def _get_dot_particle(prod_vtx_barcode, end_vtx_barcode,
