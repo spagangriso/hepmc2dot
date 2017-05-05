@@ -226,8 +226,7 @@ def convert(hepmc_file, dot_file):
                 dot.start_new_vertex(line)
             elif particle_pattern.match(line):
                 dot.add_outgoing_particle(line)
-            else:
-                pass  # ignore unknown lines
+            # ignore unknown lines
 
 
 if __name__ == '__main__':
