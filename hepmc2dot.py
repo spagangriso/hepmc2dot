@@ -58,13 +58,14 @@ def _get_dot_vertex(barcode, r, z, is_dummy=False, scale=1.):
     if is_dummy:
         attrib = 'shape=none,label=""'
     else:
-        attrib = r'label="vtx #{bc}\nr={r:.2f},z={z:.2f}"'.format(bc=barcode, r=r, z=z)
+        attrib = r'label="vtx #{bc}\nr={r:.2f},z={z:.2f}"'.format(bc=barcode,
+                                                                  r=r, z=z)
 
     vtx_name = _get_node_name(barcode, is_dummy)
     dot = '    {node} [{attrib},pos="{zpos:.3f},{rpos:.3f}!"];\n'.format(node=vtx_name,
                                                                          attrib=attrib,
-                                                                         zpos=z*scale,
-                                                                         rpos=r*scale)
+                                                                         zpos=z * scale,
+                                                                         rpos=r * scale)
     return dot
 
 
@@ -82,8 +83,8 @@ class HepDotWriter(object):
         self.cur_vtx_z = None
 
         # TODO: implement next:
-        #self.vtx_threshold = np.nan # vtx_threshold
-        self.scale = 1. #scale
+        # self.vtx_threshold = np.nan # vtx_threshold
+        self.scale = 1.  # scale
         # primary only:
         #self.vtx_threshold = 200000
         #self.scale = 50.
@@ -153,10 +154,13 @@ class HepDotWriter(object):
             mom_abs = math.sqrt(mom_r**2 + mom_z**2)
             particle_len = 200.
 
-            end_vtx_r = self.cur_vtx_r*self.scale + mom_r/mom_abs*particle_len
-            end_vtx_z = self.cur_vtx_z*self.scale + mom_z/mom_abs*particle_len
+            end_vtx_r = self.cur_vtx_r * self.scale + mom_r / mom_abs * particle_len
+            end_vtx_z = self.cur_vtx_z * self.scale + mom_z / mom_abs * particle_len
 
-            dot_vtx = _get_dot_vertex(particle_barcode, end_vtx_r, end_vtx_z, is_dummy=True)
+            dot_vtx = _get_dot_vertex(particle_barcode,
+                                      end_vtx_r,
+                                      end_vtx_z,
+                                      is_dummy=True)
             self.dotfile.write(dot_vtx)
 
         particle_dot = _get_dot_particle(self.cur_vtx_barcode,
@@ -193,8 +197,10 @@ def main(argv):
     Parses the given command line arguments and runs the conversion from the specified
     input HepMC::IO_GenEvent to the specified DOT output file
     """
-    parser = argparse.ArgumentParser(description='Convert HepMC::IO_GenEvent ASCII files into DOT files')
-    parser.add_argument('hepmcfile', help='input HepMC::IO_GenEvent formatted ASCII file')
+    parser = argparse.ArgumentParser(
+        description='Convert HepMC::IO_GenEvent ASCII files into DOT files')
+    parser.add_argument('hepmcfile',
+                        help='input HepMC::IO_GenEvent formatted ASCII file')
     parser.add_argument('dotfile', help='output DOT file')
     args = parser.parse_args(argv)
     convert(args.hepmcfile, args.dotfile)
@@ -219,7 +225,7 @@ def convert(hepmc_file, dot_file):
             elif particle_pattern.match(line):
                 dot.add_outgoing_particle(line)
             else:
-                pass # ignore unknown lines
+                pass  # ignore unknown lines
 
 
 if __name__ == '__main__':
