@@ -29,7 +29,7 @@ result in ``dotfile.dot``:
     hepmc2dot.py hepmcfile.txt dotfile.dot
 
 Source
--------------
+------
 
 The source repository is on `GitHub`_.
 
