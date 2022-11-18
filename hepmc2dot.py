@@ -7,7 +7,7 @@ import sys
 
 
 def _get_dot_particle(prod_vtx_barcode, end_vtx_barcode,
-                      particle_barcode, particle_id, particle_energy):
+                      particle_barcode, particle_id, particle_energy, particle_pt, particle_eta):
     """
     Returns a string containing a DOT formatted edge which represents a particle travelling from
     the given production to the given end vertex. If end_vtx_barcode is None, the edge will connect
@@ -21,11 +21,13 @@ def _get_dot_particle(prod_vtx_barcode, end_vtx_barcode,
 
     particle_dot = '    {prod_vtx} -> {end_vtx} [label="p #{bc}\\n' \
                    'id={part_id}\\n' \
-                   'E={energy:.0f}"];\n'.format(prod_vtx=prod_vtx,
-                                                end_vtx=end_vtx,
-                                                bc=particle_barcode,
-                                                part_id=particle_id,
-                                                energy=float(particle_energy))
+                   'pT={part_pt:.0f}, &eta;={part_eta:.1f}"];\n' \
+                   .format(prod_vtx=prod_vtx,
+                           end_vtx=end_vtx,
+                           bc=particle_barcode,
+                           part_id=particle_id,
+                           part_pt=float(particle_pt),
+                           part_eta=float(particle_eta))
     return particle_dot
 
 
@@ -139,6 +141,19 @@ class HepDotWriter(object):
         mom_z_column = 5
         mom_z = float(line[mom_z_column])
 
+        mom_r = math.sqrt(mom_x**2 + mom_y**2)
+        mom_abs = math.sqrt(mom_r**2 + mom_z**2)
+
+        particle_eta = math.copysign(999.,mom_r)
+        peta_num = particle_energy + mom_z
+        peta_den = particle_energy - mom_z
+        if ( peta_den > 1e-6 ):
+            if ( peta_num > 1e-6 ):
+                particle_eta = 0.5 * math.log( peta_num / peta_den )
+            else:
+                particle_eta = 0.0
+        particle_pt = mom_r
+
         end_vtx_barcode_column = 11
         end_vtx_barcode = abs(int(line[end_vtx_barcode_column]))
 
@@ -149,8 +164,6 @@ class HepDotWriter(object):
         if not end_vtx_barcode:
             # create dummy end node for partiles that don't have end vertices
 
-            mom_r = math.sqrt(mom_x**2 + mom_y**2)
-            mom_abs = math.sqrt(mom_r**2 + mom_z**2)
             particle_len = 200.
 
             end_vtx_r = self.cur_vtx_r * self.scale + mom_r / mom_abs * particle_len
@@ -166,7 +179,9 @@ class HepDotWriter(object):
                                          end_vtx_barcode,
                                          particle_barcode,
                                          particle_id,
-                                         particle_energy)
+                                         particle_energy,
+                                         particle_pt,
+                                         particle_eta)
         self.dotfile.write(particle_dot)
 
     def close(self):
@@ -215,19 +230,22 @@ def convert(hepmc_file, dot_file):
     begin_event_pattern = re.compile(r'^E .*$')
     vertex_pattern = re.compile(r'^V .*$')
     particle_pattern = re.compile(r'^P .*$')
-
+    
     with open(hepmc_file, 'r') as hepmc:
         dot = HepDotWriter(dot_file)
+        n_events = 0
 
         for line in hepmc:
             if begin_event_pattern.match(line):
                 dot.start_new_event(line)
+                n_events = n_events + 1
             elif vertex_pattern.match(line):
                 dot.start_new_vertex(line)
             elif particle_pattern.match(line):
                 dot.add_outgoing_particle(line)
             # ignore unknown lines
 
+        print("Converted %d events." % n_events)
 
 if __name__ == '__main__':
     args = sys.argv[1:]
