@@ -19,14 +19,27 @@ def _get_dot_particle(prod_vtx_barcode, end_vtx_barcode,
     else:
         end_vtx = _get_node_name(end_vtx_barcode)
 
-    particle_dot = '    {prod_vtx} -> {end_vtx} [label="p #{bc}\\n' \
+    extra_attrib=""
+    if abs(int(particle_id)) == 2212:
+        #color protons in blue
+        extra_attrib="fontcolor=blue,"
+    if abs(particle_eta) < 2.5:
+        #color red those particles
+        extra_attrib="color=red,"
+    if abs(int(particle_id)) == 22:
+        #color photons
+        extra_attrib="fontcolor=brown,"
+
+    particle_dot = '    {prod_vtx} -> {end_vtx} [{extra_attrib}label="p #{bc}, ' \
                    'id={part_id}\\n' \
-                   'pT={part_pt:.0f}, &eta;={part_eta:.1f}"];\n' \
+                   'pT={part_pt:.0f}, E={part_e:.0f}, &eta;={part_eta:.1f}"];\n' \
                    .format(prod_vtx=prod_vtx,
                            end_vtx=end_vtx,
                            bc=particle_barcode,
+                           extra_attrib = extra_attrib,
                            part_id=particle_id,
                            part_pt=float(particle_pt),
+                           part_e=float(particle_energy),
                            part_eta=float(particle_eta))
     return particle_dot
 
@@ -59,8 +72,9 @@ def _get_dot_vertex(barcode, r, z, is_dummy=False, scale=1.):
     if is_dummy:
         attrib = 'shape=none,label=""'
     else:
-        attrib = r'label="vtx #{bc}\nr={r:.2f},z={z:.2f}"'.format(bc=barcode,
-                                                                  r=r, z=z)
+        #attrib = r'label="vtx #{bc}\nr={r:.2f},z={z:.2f}"'.format(bc=barcode,
+        #                                                          r=r, z=z)
+        attrib = r'shape=point,label=""'.format()
 
     vtx_name = _get_node_name(barcode, is_dummy)
     dot = '    {node} [{attrib},pos="{zpos:.3f},{rpos:.3f}!"];\n'.format(node=vtx_name,
@@ -144,14 +158,11 @@ class HepDotWriter(object):
         mom_r = math.sqrt(mom_x**2 + mom_y**2)
         mom_abs = math.sqrt(mom_r**2 + mom_z**2)
 
-        particle_eta = math.copysign(999.,mom_r)
+        particle_eta = math.copysign(999.,mom_z)
         peta_num = particle_energy + mom_z
         peta_den = particle_energy - mom_z
-        if ( peta_den > 1e-6 ):
-            if ( peta_num > 1e-6 ):
-                particle_eta = 0.5 * math.log( peta_num / peta_den )
-            else:
-                particle_eta = 0.0
+        if ( peta_den > 1e-10 ) and ( peta_num > 1e-10 ):
+            particle_eta = 0.5 * math.log( peta_num / peta_den )
         particle_pt = mom_r
 
         end_vtx_barcode_column = 11
