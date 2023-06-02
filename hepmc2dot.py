@@ -230,11 +230,13 @@ def main(argv):
     parser.add_argument('hepmcfile',
                         help='input HepMC::IO_GenEvent formatted ASCII file')
     parser.add_argument('dotfile', help='output DOT file')
+    parser.add_argument('nevents', type=int, default=-1, nargs='?', help='Process only this number of events')
+    parser.add_argument('skip', type=int, default=0, nargs='?', help='Skip the given number of events at the start')
     args = parser.parse_args(argv)
-    convert(args.hepmcfile, args.dotfile)
+    convert(args.hepmcfile, args.dotfile, args.nevents, args.skip)
 
 
-def convert(hepmc_file, dot_file):
+def convert(hepmc_file, dot_file, max_events, skip_events):
     """
     Converts the given HepMC::IO_GenEvent formatted file into a DOT formatted file
     """
@@ -245,15 +247,28 @@ def convert(hepmc_file, dot_file):
     with open(hepmc_file, 'r') as hepmc:
         dot = HepDotWriter(dot_file)
         n_events = 0
-
+        skipped_events = 0
+        skipping_event = False
         for line in hepmc:
             if begin_event_pattern.match(line):
+                if (skipped_events < skip_events):
+                    # need to skip this event
+                    skipped_events = skipped_events + 1
+                    skipping_event = True
+                    continue
+                else:
+                    # done skipping events! Continue with normal processing
+                    skipping_event = False
+                if (max_events >= 0) and (n_events >= max_events):
+                    break; # Stop processing events
                 dot.start_new_event(line)
                 n_events = n_events + 1
             elif vertex_pattern.match(line):
-                dot.start_new_vertex(line)
+                if not skipping_event:
+                    dot.start_new_vertex(line)
             elif particle_pattern.match(line):
-                dot.add_outgoing_particle(line)
+                if not skipping_event:
+                    dot.add_outgoing_particle(line)
             # ignore unknown lines
 
         print("Converted %d events." % n_events)
