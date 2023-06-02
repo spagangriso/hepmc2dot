@@ -26,8 +26,10 @@ result in ``dotfile.dot``:
 
 .. code:: shell
 
-    hepmc2dot.py hepmcfile.txt dotfile.dot
+    hepmc2dot.py hepmcfile.txt dotfile.dot [nevents] [skip]
 
+where `nevents` limits the number of processed events and `skip` skips the given number of events from the start of the input file.
+    
 Source
 ------
 
