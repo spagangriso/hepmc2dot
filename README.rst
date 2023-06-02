@@ -29,6 +29,8 @@ result in ``dotfile.dot``:
     hepmc2dot.py hepmcfile.txt dotfile.dot [nevents] [skip]
 
 where `nevents` limits the number of processed events and `skip` skips the given number of events from the start of the input file.
+
+The utility script ``create-graph-pdf.sh`` is also provided to easily convert input ``HepMC`` or generated ``.dot`` files to a nicely formatted ``PDF`` file with one event per page. 
     
 Source
 ------
